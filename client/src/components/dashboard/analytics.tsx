@@ -10,8 +10,10 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  LineChart,
+  Line,
 } from "recharts";
-import { format, startOfWeek, addDays } from "date-fns";
+import { format, startOfWeek, addDays, differenceInDays, subDays } from "date-fns";
 
 export function TaskAnalytics() {
   const { tasks } = useTasks();
@@ -43,7 +45,56 @@ export function TaskAnalytics() {
     };
   });
 
-  const COLORS = ["#10B981", "#F59E0B", "#EF4444"];
+  // Calculate completion trends (last 30 days)
+  const completionTrends = Array.from({ length: 30 }, (_, i) => {
+    const date = subDays(new Date(), i);
+    const completedTasks = tasks.filter(task => {
+      if (!task.completed || !task.dueDate) return false;
+      const taskDate = new Date(task.dueDate);
+      return format(taskDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd");
+    }).length;
+    return {
+      date: format(date, "MMM dd"),
+      completed: completedTasks,
+    };
+  }).reverse();
+
+  // Calculate average completion time by priority
+  const avgCompletionTime = {
+    high: 0,
+    medium: 0,
+    low: 0,
+  };
+
+  let counts = { high: 0, medium: 0, low: 0 };
+
+  tasks.forEach(task => {
+    if (task.completed && task.dueDate) {
+      const completionTime = differenceInDays(
+        new Date(),
+        new Date(task.dueDate)
+      );
+      avgCompletionTime[task.priority] += Math.abs(completionTime);
+      counts[task.priority]++;
+    }
+  });
+
+  Object.keys(avgCompletionTime).forEach(priority => {
+    if (counts[priority] > 0) {
+      avgCompletionTime[priority] = Math.round(
+        avgCompletionTime[priority] / counts[priority]
+      );
+    }
+  });
+
+  const completionTimeData = Object.entries(avgCompletionTime).map(
+    ([priority, days]) => ({
+      priority,
+      days: days || 0,
+    })
+  );
+
+  const COLORS = ["#EF4444", "#F59E0B", "#10B981"];
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -89,6 +140,57 @@ export function TaskAnalytics() {
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="tasks" fill="#3B82F6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>30-Day Completion Trends</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={completionTrends}>
+                <XAxis 
+                  dataKey="date" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={70}
+                  interval={2}
+                />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="completed"
+                  stroke="#3B82F6"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Average Completion Time by Priority</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={completionTimeData}>
+                <XAxis dataKey="priority" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="days">
+                  {completionTimeData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
