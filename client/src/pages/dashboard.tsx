@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { TaskAnalytics } from "@/components/dashboard/analytics";
 
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();
@@ -37,12 +38,16 @@ export default function Dashboard() {
           <TabsList>
             <TabsTrigger value="list">List View</TabsTrigger>
             <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
           </TabsList>
           <TabsContent value="list">
             <TaskList />
           </TabsContent>
           <TabsContent value="calendar">
             <CalendarView />
+          </TabsContent>
+          <TabsContent value="analytics">
+            <TaskAnalytics />
           </TabsContent>
         </Tabs>
 
