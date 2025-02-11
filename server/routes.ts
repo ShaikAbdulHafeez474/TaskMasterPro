@@ -2,10 +2,89 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertProjectSchema, insertTaskSchema } from "@shared/schema";
+import { insertProjectSchema, insertTaskSchema, insertTeamSchema, insertTeamMemberSchema } from "@shared/schema";
 
 export function registerRoutes(app: Express): Server {
   setupAuth(app);
+
+  // Teams
+  app.get("/api/teams", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const teams = await storage.getTeams(req.user.id);
+    res.json(teams);
+  });
+
+  app.post("/api/teams", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const parsed = insertTeamSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(parsed.error);
+    }
+    const team = await storage.createTeam({
+      ...parsed.data,
+      ownerId: req.user.id,
+    });
+
+    // Add the creator as team owner
+    await storage.addTeamMember({
+      teamId: team.id,
+      userId: req.user.id,
+      role: "owner",
+    });
+
+    res.status(201).json(team);
+  });
+
+  app.post("/api/teams/:id/members", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const team = await storage.getTeam(Number(req.params.id));
+    if (!team) return res.sendStatus(404);
+
+    const members = await storage.getTeamMembers(team.id);
+    const userRole = members.find(m => m.userId === req.user.id)?.role;
+    if (!userRole || !["owner", "admin"].includes(userRole)) {
+      return res.status(403).send("Only owners and admins can add members");
+    }
+
+    const parsed = insertTeamMemberSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json(parsed.error);
+    }
+
+    const member = await storage.addTeamMember({
+      ...parsed.data,
+      teamId: team.id,
+    });
+    res.status(201).json(member);
+  });
+
+  app.delete("/api/teams/:teamId/members/:userId", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const team = await storage.getTeam(Number(req.params.teamId));
+    if (!team) return res.sendStatus(404);
+
+    const members = await storage.getTeamMembers(team.id);
+    const userRole = members.find(m => m.userId === req.user.id)?.role;
+    if (!userRole || !["owner", "admin"].includes(userRole)) {
+      return res.status(403).send("Only owners and admins can remove members");
+    }
+
+    await storage.removeTeamMember(
+      Number(req.params.teamId),
+      Number(req.params.userId)
+    );
+    res.sendStatus(200);
+  });
+
+  app.delete("/api/teams/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const team = await storage.getTeam(Number(req.params.id));
+    if (!team || team.ownerId !== req.user.id) {
+      return res.sendStatus(404);
+    }
+    await storage.deleteTeam(Number(req.params.id));
+    res.sendStatus(200);
+  });
 
   // Projects
   app.get("/api/projects", async (req, res) => {

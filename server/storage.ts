@@ -1,6 +1,6 @@
-import { type InsertUser, type User, type Project, type InsertProject, type Task, type InsertTask } from "@shared/schema";
+import { type InsertUser, type User, type Project, type InsertProject, type Task, type InsertTask, type Team, type InsertTeam, type TeamMember, type InsertTeamMember } from "@shared/schema";
 import session from "express-session";
-import { users, projects, tasks } from "@shared/schema";
+import { users, projects, tasks, teams, teamMembers } from "@shared/schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import connectPg from "connect-pg-simple";
@@ -12,6 +12,15 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+
+  // Team operations
+  createTeam(team: InsertTeam & { ownerId: number }): Promise<Team>;
+  getTeams(userId: number): Promise<Team[]>;
+  getTeam(id: number): Promise<Team | undefined>;
+  deleteTeam(id: number): Promise<void>;
+  addTeamMember(member: InsertTeamMember): Promise<TeamMember>;
+  removeTeamMember(teamId: number, userId: number): Promise<void>;
+  getTeamMembers(teamId: number): Promise<TeamMember[]>;
 
   // Project operations
   createProject(project: InsertProject & { userId: number }): Promise<Project>;
@@ -52,6 +61,51 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  async createTeam(team: InsertTeam & { ownerId: number }): Promise<Team> {
+    const [newTeam] = await db.insert(teams).values(team).returning();
+    return newTeam;
+  }
+
+  async getTeams(userId: number): Promise<Team[]> {
+    const memberTeams = await db
+      .select()
+      .from(teams)
+      .innerJoin(teamMembers, eq(teams.id, teamMembers.teamId))
+      .where(eq(teamMembers.userId, userId));
+    return memberTeams.map(({ teams }) => teams);
+  }
+
+  async getTeam(id: number): Promise<Team | undefined> {
+    const [team] = await db.select().from(teams).where(eq(teams.id, id));
+    return team;
+  }
+
+  async deleteTeam(id: number): Promise<void> {
+    await db.delete(teams).where(eq(teams.id, id));
+  }
+
+  async addTeamMember(member: InsertTeamMember): Promise<TeamMember> {
+    const [newMember] = await db
+      .insert(teamMembers)
+      .values(member)
+      .returning();
+    return newMember;
+  }
+
+  async removeTeamMember(teamId: number, userId: number): Promise<void> {
+    await db
+      .delete(teamMembers)
+      .where(eq(teamMembers.teamId, teamId))
+      .where(eq(teamMembers.userId, userId));
+  }
+
+  async getTeamMembers(teamId: number): Promise<TeamMember[]> {
+    return db
+      .select()
+      .from(teamMembers)
+      .where(eq(teamMembers.teamId, teamId));
   }
 
   async createProject(project: InsertProject & { userId: number }): Promise<Project> {
