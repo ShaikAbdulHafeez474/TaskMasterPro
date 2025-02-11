@@ -60,26 +60,37 @@ export function TaskAnalytics() {
   }).reverse();
 
   // Calculate average completion time by priority
-  const avgCompletionTime = {
+  type PriorityTimes = {
+    high: number;
+    medium: number;
+    low: number;
+  };
+
+  const avgCompletionTime: PriorityTimes = {
     high: 0,
     medium: 0,
     low: 0,
   };
 
-  let counts = { high: 0, medium: 0, low: 0 };
+  const counts: PriorityTimes = {
+    high: 0,
+    medium: 0,
+    low: 0,
+  };
 
   tasks.forEach(task => {
-    if (task.completed && task.dueDate) {
+    if (task.completed && task.dueDate && task.priority in avgCompletionTime) {
+      const priority = task.priority as keyof PriorityTimes;
       const completionTime = differenceInDays(
         new Date(),
         new Date(task.dueDate)
       );
-      avgCompletionTime[task.priority] += Math.abs(completionTime);
-      counts[task.priority]++;
+      avgCompletionTime[priority] += Math.abs(completionTime);
+      counts[priority]++;
     }
   });
 
-  Object.keys(avgCompletionTime).forEach(priority => {
+  (Object.keys(avgCompletionTime) as Array<keyof PriorityTimes>).forEach(priority => {
     if (counts[priority] > 0) {
       avgCompletionTime[priority] = Math.round(
         avgCompletionTime[priority] / counts[priority]

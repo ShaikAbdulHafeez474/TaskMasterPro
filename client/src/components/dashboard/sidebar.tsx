@@ -4,6 +4,7 @@ import {
   LogOutIcon,
   CalendarIcon,
   ListTodoIcon,
+  UsersIcon,
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -42,6 +43,14 @@ export function Sidebar({ onLogout }: SidebarProps) {
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             Calendar
+          </Button>
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => setLocation("/teams")}
+          >
+            <UsersIcon className="mr-2 h-4 w-4" />
+            Teams
           </Button>
         </div>
         <div className="mt-auto">

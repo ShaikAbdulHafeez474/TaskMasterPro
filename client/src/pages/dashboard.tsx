@@ -4,6 +4,7 @@ import { Stats } from "@/components/dashboard/stats";
 import { TaskList } from "@/components/tasks/task-list";
 import { TaskForm } from "@/components/tasks/task-form";
 import { CalendarView } from "@/components/dashboard/calendar-view";
+import { TeamList } from "@/components/teams/team-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
@@ -39,6 +40,7 @@ export default function Dashboard() {
             <TabsTrigger value="list">List View</TabsTrigger>
             <TabsTrigger value="calendar">Calendar View</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="teams">Teams</TabsTrigger>
           </TabsList>
           <TabsContent value="list">
             <TaskList />
@@ -48,6 +50,9 @@ export default function Dashboard() {
           </TabsContent>
           <TabsContent value="analytics">
             <TaskAnalytics />
+          </TabsContent>
+          <TabsContent value="teams">
+            <TeamList />
           </TabsContent>
         </Tabs>
 

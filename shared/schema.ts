@@ -43,13 +43,18 @@ export const tasks = pgTable("tasks", {
   assignedTo: integer("assigned_to"),
 });
 
-// Schema for team creation
+// User schema
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
+});
+
+// Team schemas
 export const insertTeamSchema = createInsertSchema(teams).pick({
   name: true,
   description: true,
 });
 
-// Schema for team member
 export const insertTeamMemberSchema = createInsertSchema(teamMembers).pick({
   teamId: true,
   userId: true,
@@ -58,14 +63,14 @@ export const insertTeamMemberSchema = createInsertSchema(teamMembers).pick({
   role: z.enum(["owner", "admin", "member"]),
 });
 
-// Update project schema to include optional teamId
+// Project schema
 export const insertProjectSchema = createInsertSchema(projects).pick({
   name: true,
   description: true,
   teamId: true,
 });
 
-// Update task schema to include team-related fields
+// Task schema
 export const insertTaskSchema = createInsertSchema(tasks).pick({
   title: true,
   description: true,
