@@ -17,14 +17,22 @@ interface TaskCardProps {
   task: Task;
 }
 
+type PriorityIconMap = {
+  low: JSX.Element;
+  medium: JSX.Element;
+  high: JSX.Element;
+}
+
 export function TaskCard({ task }: TaskCardProps) {
   const { updateTask, deleteTask } = useTasks();
 
-  const priorityIcon = {
+  const priorityIcons: PriorityIconMap = {
     low: <Info className="h-4 w-4 text-blue-500" />,
     medium: <AlertCircle className="h-4 w-4 text-yellow-500" />,
     high: <AlertTriangle className="h-4 w-4 text-red-500" />,
-  }[task.priority];
+  };
+
+  const priorityIcon = priorityIcons[task.priority as keyof PriorityIconMap];
 
   return (
     <Card
@@ -36,7 +44,7 @@ export function TaskCard({ task }: TaskCardProps) {
       <CardContent className="pt-6">
         <div className="flex items-start gap-2">
           <Checkbox
-            checked={task.completed}
+            checked={task.completed || false}
             onCheckedChange={(checked) =>
               updateTask({
                 id: task.id,

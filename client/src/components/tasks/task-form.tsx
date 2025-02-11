@@ -34,9 +34,16 @@ interface TaskFormProps {
   onSuccess?: () => void;
 }
 
+type TaskFormData = {
+  title: string;
+  description: string;
+  dueDate?: string;
+  priority: "low" | "medium" | "high";
+};
+
 export function TaskForm({ onSuccess }: TaskFormProps) {
   const { createTask } = useTasks();
-  const form = useForm<InsertTask>({
+  const form = useForm<TaskFormData>({
     resolver: zodResolver(insertTaskSchema),
     defaultValues: {
       title: "",
@@ -45,8 +52,8 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
     },
   });
 
-  function onSubmit(data: InsertTask) {
-    createTask(data, {
+  function onSubmit(data: TaskFormData) {
+    createTask(data as InsertTask, {
       onSuccess: () => {
         form.reset();
         onSuccess?.();
@@ -78,7 +85,7 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea {...field} />
+                <Textarea {...field} value={field.value || ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -116,6 +123,7 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
                       onSelect={(date) =>
                         field.onChange(date?.toISOString())
                       }
+                      initialFocus
                     />
                   </PopoverContent>
                 </Popover>
