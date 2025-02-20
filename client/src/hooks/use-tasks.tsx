@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Task, InsertTask } from "@shared/schema";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from '@/hooks/use-toast';
 
 export function useTasks() {
   const { toast } = useToast();
@@ -12,7 +12,11 @@ export function useTasks() {
 
   const createTaskMutation = useMutation({
     mutationFn: async (task: InsertTask) => {
-      const res = await apiRequest("POST", "/api/tasks", task);
+      const formattedTask = {
+        ...task,
+        dueDate: task.dueDate ? new Date(task.dueDate) : undefined, // Ensure correct format
+      };
+      const res = await apiRequest("POST", "/api/tasks", formattedTask);
       return res.json();
     },
     onSuccess: () => {

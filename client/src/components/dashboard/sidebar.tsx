@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   LayoutDashboardIcon,
   LogOutIcon,
@@ -7,6 +7,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { useLocation } from "wouter";
+
 
 interface SidebarProps {
   onLogout: () => void;

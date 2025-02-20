@@ -6,16 +6,27 @@ async function throwIfResNotOk(res: Response) {
     throw new Error(`${res.status}: ${text}`);
   }
 }
-
+const API_BASE_URL =  "http://localhost:5000";
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  // Convert dueDate string to Date if it exists
+  let processedData = data;
+  if (data && typeof data === "object" && "dueDate" in data) {
+    processedData = {
+      ...data,
+      dueDate:
+        typeof data.dueDate === "string" && data.dueDate.trim() !== ""
+          ? new Date(data.dueDate).toISOString()
+          : undefined,
+    };
+  }
+  const res = await fetch(`${API_BASE_URL}${url}`, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
+    body: data ? JSON.stringify(processedData) : undefined,
     credentials: "include",
   });
 

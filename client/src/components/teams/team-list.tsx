@@ -1,6 +1,6 @@
-import { useTeams } from "@/hooks/use-teams";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTeams } from '@/hooks/use-teams';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { UsersIcon, Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import { TeamForm } from "./team-form";
 
 export function TeamList() {

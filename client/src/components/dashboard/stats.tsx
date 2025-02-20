@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTasks } from "@/hooks/use-tasks";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTasks } from '@/hooks/use-tasks';
 import {
   CheckCircle2Icon,
   ClockIcon,

@@ -1,6 +1,6 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   CalendarIcon,
   Trash2Icon,
@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Task } from "@shared/schema";
-import { useTasks } from "@/hooks/use-tasks";
-import { cn } from "@/lib/utils";
+import { useTasks } from '@/hooks/use-tasks';
+import { cn } from '@/lib/utils';
 
 interface TaskCardProps {
   task: Task;

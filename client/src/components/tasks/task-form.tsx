@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -8,27 +8,27 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import { format } from "date-fns";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { insertTaskSchema, type InsertTask } from "@shared/schema";
-import { useTasks } from "@/hooks/use-tasks";
-import { cn } from "@/lib/utils";
+import { useTasks } from '@/hooks/use-tasks';
+import { cn } from '@/lib/utils';
 
 interface TaskFormProps {
   onSuccess?: () => void;
@@ -37,7 +37,7 @@ interface TaskFormProps {
 type TaskFormData = {
   title: string;
   description: string;
-  dueDate?: string;
+  dueDate?: Date;
   priority: "low" | "medium" | "high";
 };
 
@@ -120,9 +120,8 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
                     <Calendar
                       mode="single"
                       selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(date?.toISOString())
-                      }
+                      onSelect={(date) => field.onChange(date ?? undefined)}
+
                       initialFocus
                     />
                   </PopoverContent>

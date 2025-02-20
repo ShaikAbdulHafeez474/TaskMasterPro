@@ -1,12 +1,12 @@
-import { useAuth } from "@/hooks/use-auth";
-import { Sidebar } from "@/components/dashboard/sidebar";
-import { Stats } from "@/components/dashboard/stats";
-import { TaskList } from "@/components/tasks/task-list";
-import { TaskForm } from "@/components/tasks/task-form";
-import { CalendarView } from "@/components/dashboard/calendar-view";
-import { TeamList } from "@/components/teams/team-list";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { useAuth } from '@/hooks/use-auth';
+import { Sidebar } from '@/components/dashboard/sidebar';
+import { Stats } from '@/components/dashboard/stats';
+import { TaskList } from '@/components/tasks/task-list';
+import { TaskForm } from '@/components/tasks/task-form';
+import { CalendarView } from '@/components/dashboard/calendar-view';
+import { TeamList } from '@/components/teams/team-list';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import {
@@ -14,8 +14,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { TaskAnalytics } from "@/components/dashboard/analytics";
+} from '@/components/ui/dialog';
+import { TaskAnalytics } from '@/components/dashboard/analytics';
 
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();

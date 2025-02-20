@@ -74,12 +74,13 @@ export const insertProjectSchema = createInsertSchema(projects).pick({
 export const insertTaskSchema = createInsertSchema(tasks).pick({
   title: true,
   description: true,
-  dueDate: true,
+  dueDate:true,
   priority: true,
   projectId: true,
   teamId: true,
   assignedTo: true,
 }).extend({
+  dueDate: z.preprocess((val) => new Date(val as string), z.date()), // Converts string to Date
   priority: z.enum(["low", "medium", "high"]),
 });
 
