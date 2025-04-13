@@ -53,13 +53,21 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
   });
 
   function onSubmit(data: TaskFormData) {
-    createTask(data as InsertTask, {
+    const formattedData: InsertTask = {
+      ...data,
+      dueDate: data.dueDate ? new Date(data.dueDate) : undefined, // Ensuring it's a Date object or undefined
+    };
+  
+    createTask(formattedData, {
       onSuccess: () => {
         form.reset();
         onSuccess?.();
       },
     });
   }
+  
+  
+  
 
   return (
     <Form {...form}>

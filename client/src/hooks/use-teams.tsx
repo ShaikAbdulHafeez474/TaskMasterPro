@@ -6,13 +6,20 @@ import { useToast } from '@/hooks/use-toast';
 export function useTeams() {
   const { toast } = useToast();
 
+  // ✅ FIX: Added `queryFn` to fetch teams
   const { data: teams = [], isLoading } = useQuery<Team[]>({
     queryKey: ["/api/teams"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/teams");
+      if (!res.ok) throw new Error("Failed to fetch teams"); // Handle errors
+      return res.json();
+    },
   });
 
   const createTeamMutation = useMutation({
     mutationFn: async (team: InsertTeam) => {
       const res = await apiRequest("POST", "/api/teams", team);
+      if (!res.ok) throw new Error("Failed to create team");
       return res.json();
     },
     onSuccess: () => {
@@ -33,7 +40,8 @@ export function useTeams() {
 
   const deleteTeamMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest("DELETE", `/api/teams/${id}`);
+      const res = await apiRequest("DELETE", `/api/teams/${id}`);
+      if (!res.ok) throw new Error("Failed to delete team");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/teams"] });
